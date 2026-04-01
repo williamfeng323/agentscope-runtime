@@ -30,6 +30,7 @@ class Settings(BaseSettings):
         "agentrun",
         "fc",
         "gvisor",
+        "gvisor_k8s",
         "boxlite",
     ] = "docker"
     DEFAULT_MOUNT_DIR: str = "sessions_mount_dir"

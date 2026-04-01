@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from .kruise_client import KruiseClient
     from .fc_client import FCClient
     from .agentrun_client import AgentRunClient
-    from .gvisor_client import GVisorDockerClient
+    from .gvisor_client import GVisorDockerClient, GVisorKubernetesClient
     from .boxlite_client import BoxliteClient
 
 install_lazy_loader(
@@ -29,6 +29,12 @@ install_lazy_loader(
 )
 
 
+def _load_gvisor_kubernetes_client():
+    from .gvisor_client import get_gvisor_kubernetes_client_cls
+
+    return get_gvisor_kubernetes_client_cls()
+
+
 class ContainerClientFactory:
     _CLIENT_MAPPING = {
         "docker": "DockerClient",
@@ -43,6 +49,10 @@ class ContainerClientFactory:
 
     @classmethod
     def create_client(cls, deployment_type, config):
+        if deployment_type == "gvisor_k8s":
+            client_class = _load_gvisor_kubernetes_client()
+            return client_class(config=config)
+
         try:
             class_name = cls._CLIENT_MAPPING[deployment_type]
         except KeyError as e:

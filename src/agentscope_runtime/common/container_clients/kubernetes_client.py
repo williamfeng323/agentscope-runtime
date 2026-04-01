@@ -258,6 +258,11 @@ class KubernetesClient(BaseClient):
                 secrets.append(client.V1LocalObjectReference(name=secret_name))
             pod_spec.image_pull_secrets = secrets
 
+        # Set runtimeClassName (e.g. "gvisor", "kata-containers") to select
+        # a non-default container runtime on the node.
+        if "runtime_class_name" in runtime_config:
+            pod_spec.runtime_class_name = runtime_config["runtime_class_name"]
+
         return pod_spec
 
     def create(
